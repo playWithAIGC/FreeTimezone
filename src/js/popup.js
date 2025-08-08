@@ -9,7 +9,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     const disableBtn = document.getElementById("disable-btn");
     const cleanAugmentBtn = document.getElementById("clean-augment-btn");
     const cleanStatusEl = document.getElementById("clean-status");
-    const tutorialBtn = document.getElementById("tutorial-btn");
     const mailBtn = document.getElementById("mail-btn");
     const regionToggle = document.getElementById("region-toggle");
     const regionContent = document.getElementById("region-content");
@@ -237,7 +236,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         applyBtn.addEventListener("click", applySettings);
         disableBtn.addEventListener("click", disablePlugin);
         cleanAugmentBtn.addEventListener("click", cleanAugmentData);
-        tutorialBtn.addEventListener("click", openTutorial);
         mailBtn.addEventListener("click", openMail);
         regionToggle.addEventListener("click", toggleRegionContent);
         authorText.addEventListener("dblclick", openLeakTestPage);
