@@ -17,19 +17,30 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # 第二步：使用社区的打包 Action
-      - name: Build CRX
-        uses: stefanzweifel/chrome-extension-builder-action@v1
+      # 第二步：安装 Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          # 你的扩展程序根目录（如果 manifest.json 就在根目录，这里就是 '.'）
-          path: src
-          
-          # 你的私有密钥，从 GitHub Secrets 读取
-          private_key: ${{ secrets.CRX_PRIVATE_KEY }}
-          
-          # 打包后的文件名
-          zip_name: FreeTimezone.zip  # 这个 Action 会先生成一个 zip 包
-          crx_name: FreeTimezone.crx  # 然后再生成 crx 包
+          node-version: '18'
+
+      # 第三步：创建 ZIP 包
+      - name: Create ZIP package
+        run: |
+          cd src
+          zip -r ../FreeTimezone.zip .
+          cd ..
+
+      # 第四步：安装 Chrome 扩展打包工具
+      - name: Install crx3
+        run: npm install -g crx3
+
+      # 第五步：生成 CRX 包（如果有私钥）
+      - name: Build CRX
+        if: ${{ secrets.CRX_PRIVATE_KEY != '' }}
+        run: |
+          echo "${{ secrets.CRX_PRIVATE_KEY }}" > private-key.pem
+          crx3 src -p private-key.pem -o FreeTimezone.crx
+          rm private-key.pem
 
       # 第三步（可选）：将打包好的文件作为产物上传
       - name: Upload Artifacts
