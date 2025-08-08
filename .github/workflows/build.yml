@@ -19,7 +19,7 @@ jobs:
 
       # 第二步：使用社区的打包 Action
       - name: Build CRX
-        uses: stefanzweifel/chrome-extension-builder-action@v1.16.0
+        uses: stefanzweifel/chrome-extension-builder-action@v1
         with:
           # 你的扩展程序根目录（如果 manifest.json 就在根目录，这里就是 '.'）
           path: src
