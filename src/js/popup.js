@@ -205,9 +205,19 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     function toggleRegionContent() {
-        regionContent.classList.toggle('collapsed');
-        regionToggle.classList.toggle('collapsed');
-        regionContent.classList.toggle('expanded');
+        const isCollapsed = regionContent.classList.contains('collapsed');
+        
+        if (isCollapsed) {
+            // 展开：移除 collapsed，添加 expanded
+            regionContent.classList.remove('collapsed');
+            regionContent.classList.add('expanded');
+            regionToggle.classList.remove('collapsed');
+        } else {
+            // 收起：移除 expanded，添加 collapsed
+            regionContent.classList.remove('expanded');
+            regionContent.classList.add('collapsed');
+            regionToggle.classList.add('collapsed');
+        }
     }
 
     function openLeakTestPage() {
