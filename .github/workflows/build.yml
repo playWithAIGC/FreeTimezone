@@ -36,9 +36,11 @@ jobs:
 
       # 第五步：生成 CRX 包（如果有私钥）
       - name: Build CRX
-        if: ${{ secrets.CRX_PRIVATE_KEY != '' }}
+        if: ${{ env.CRX_PRIVATE_KEY != '' }}
+        env:
+          CRX_PRIVATE_KEY: ${{ secrets.CRX_PRIVATE_KEY }}
         run: |
-          echo "${{ secrets.CRX_PRIVATE_KEY }}" > private-key.pem
+          echo "$CRX_PRIVATE_KEY" > private-key.pem
           crx3 src -p private-key.pem -o FreeTimezone.crx
           rm private-key.pem
 
