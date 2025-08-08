@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreeTimezone</title>
+    <style>
+        body {
+            width: 350px;
+            min-height: 400px;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .header {
+            padding: 20px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .header .version {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        .user-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            font-size: 11px;
+        }
+
+        .user-welcome {
+            opacity: 0.9;
+            flex: 1;
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .buy-days-btn {
+            background: linear-gradient(135deg, #9c27b0, #673ab7);
+            border: none;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 24px;
+        }
+
+        .buy-days-btn:hover {
+            background: linear-gradient(135deg, #8e24aa, #5e35b1);
+            transform: scale(1.05);
+        }
+
+        .logout-btn {
+            background: rgba(244, 67, 54, 0.8);
+            border: none;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(244, 67, 54, 1);
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title .icon {
+            margin-right: 8px;
+            font-size: 16px;
+        }
+
+        .section-title.collapsible {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .section-title.collapsible:hover {
+            opacity: 0.8;
+        }
+
+        .section-title .toggle-icon {
+            margin-left: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .section-title.collapsed .toggle-icon {
+            transform: rotate(-90deg);
+        }
+
+        .collapsible-content {
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .collapsible-content.collapsed {
+            max-height: 0;
+        }
+
+        .collapsible-content.expanded {
+            max-height: 500px;
+        }
+
+        .region-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .region-card {
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            position: relative;
+        }
+
+        .region-card:hover {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .region-card.selected {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: #4CAF50;
+            box-shadow: 0 0 20px rgba(76, 175, 80, 0.3);
+        }
+
+        .region-card .flag {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .region-card .name {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .region-card .timezone {
+            font-size: 11px;
+            opacity: 0.8;
+        }
+
+        .status {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .status.active {
+            background: rgba(76, 175, 80, 0.2);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+
+        .current-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .current-location {
+            font-weight: 600;
+        }
+
+        .current-time {
+            font-size: 11px;
+            opacity: 0.9;
+        }
+
+        .controls {
+            margin-top: 20px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 4px;
+        }
+
+        .btn-primary {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #45a049;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #17a2b8, #138496);
+            color: white;
+        }
+
+        .btn-info:hover {
+            background: linear-gradient(135deg, #138496, #117a8b);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(23, 162, 184, 0.3);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ffc107, #e0a800);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: linear-gradient(135deg, #e0a800, #d39e00);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+        }
+
+        .clean-status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .clean-status.progress {
+            background: linear-gradient(135deg, #2196F3, #21CBF3);
+            color: white;
+        }
+
+        .clean-status.success {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+        }
+
+        .clean-status.error {
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+            color: white;
+        }
+
+        .clean-progress {
+            position: relative;
+        }
+
+        .clean-progress::after {
+            content: '';
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid transparent;
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 8px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .footer {
+            text-align: center;
+            padding: 15px;
+            font-size: 11px;
+            opacity: 0.7;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* 数据清理样式 */
+        .clean-info {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+            font-size: 12px;
+        }
+
+        .clean-description {
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .clean-sites {
+            opacity: 0.8;
+            font-size: 11px;
+        }
+
+        .clean-status {
+            background: rgba(255, 193, 7, 0.2);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .clean-status.success {
+            background: rgba(76, 175, 80, 0.2);
+            border-color: rgba(76, 175, 80, 0.3);
+        }
+
+        .clean-status.error {
+            background: rgba(244, 67, 54, 0.2);
+            border-color: rgba(244, 67, 54, 0.3);
+        }
+
+        .clean-progress {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .clean-progress::before {
+            content: '';
+            width: 12px;
+            height: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 购买天数弹窗样式 */
+        .buy-days-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .buy-days-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 25px;
+            width: 300px;
+            max-width: 90%;
+            color: white;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .buy-days-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .buy-days-header h3 {
+            margin: 0 0 10px 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .buy-days-header p {
+            margin: 0;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .activation-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .activation-section h4 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .activation-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 14px;
+            text-align: center;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+
+        .activation-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .activation-input:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.3);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-btn-primary {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .modal-btn-primary:hover {
+            background: #45a049;
+        }
+
+        .modal-btn-primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .modal-btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .modal-btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🌍 FengCheTimezone</h1>
+        <div class="user-info" id="user-info" style="display: none;">
+            <span class="user-welcome" id="user-welcome">欢迎，用户</span>
+            <div class="user-actions">
+                <button class="buy-days-btn" id="buy-days-btn" title="购买天数">💎</button>
+                <button class="logout-btn" id="logout-btn">退出</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="content">
+        <!-- 清理Augment数据模块 - 移到最上面 -->
+        <div class="section">
+            <button class="btn btn-secondary" id="clean-augment-btn">🧹 清理Augment数据</button>
+            <div class="clean-status" id="clean-status" style="display: none;">
+                <div class="clean-progress">正在清理数据...</div>
+            </div>
+        </div>
+
+        <!-- 应用设置按钮 - 放在清理按钮下面 -->
+        <div class="controls">
+            <button class="btn btn-primary" id="apply-btn">应用设置 / Apply Settings</button>
+            <button class="btn btn-secondary" id="disable-btn" style="display: none;">停用插件 / Disable Plugin</button>
+        </div>
+
+        <div class="section">
+            <div class="section-title collapsible collapsed" id="region-toggle">
+                <span class="icon">🎯</span>
+                选择地区 / Select Region
+                <span class="toggle-icon">🔽</span>
+            </div>
+            <div class="collapsible-content collapsed" id="region-content">
+                <div class="region-grid">
+                    <div class="region-card" data-region="US">
+                        <div class="flag">🇺🇸</div>
+                        <div class="name">美国</div>
+                        <div class="timezone">America/New_York</div>
+                    </div>
+                    <div class="region-card" data-region="TW">
+                        <div class="flag">🇹🇼</div>
+                        <div class="name">台湾</div>
+                        <div class="timezone">Asia/Taipei</div>
+                    </div>
+                    <div class="region-card" data-region="JP">
+                        <div class="flag">🇯🇵</div>
+                        <div class="name">日本</div>
+                        <div class="timezone">Asia/Tokyo</div>
+                    </div>
+                    <div class="region-card" data-region="SG">
+                        <div class="flag">🇸🇬</div>
+                        <div class="name">新加坡</div>
+                        <div class="timezone">Asia/Singapore</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                <span class="icon">📍</span>
+                当前状态 / Current Status
+            </div>
+            <div class="status" id="status">
+                <div class="current-info">
+                    <div class="current-location" id="current-location">加载中...</div>
+                    <div class="current-time" id="current-time">--:--</div>
+                </div>
+                <div id="current-details">正在获取当前设置...</div>
+            </div>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <div>正在应用设置...</div>
+        </div>
+    </div>
+
+    <!-- 邮箱系统按钮 -->
+    <div class="controls" style="margin-top: 15px;">
+        <button class="btn btn-warning" id="mail-btn">📧 邮箱系统</button>
+    </div>
+
+   
+
+    <div class="footer">
+        <span id="author-text">FreeTimezone by apple </span>
+    </div>
+
+   
+
+    <script src="popup.js"></script>
+</body>
+</html>
